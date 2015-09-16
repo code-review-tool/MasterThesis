@@ -1,6 +1,6 @@
 /*
-* Main entry point for the boilerplate
-*/
+ * Main entry point for the boilerplate
+ */
 
 // Port
 var appPort = (process.env.PORT || 5001);
@@ -9,7 +9,7 @@ var appPort = (process.env.PORT || 5001);
 var express = require('express'),
 	routes = require('./routes'),
 	socket = require('./routes/socket.js')
-	app = express(),
+app = express(),
 	fs = require('fs'),
 	http = require('http'),
 	session = require('express-session'),
@@ -18,6 +18,7 @@ var express = require('express'),
 	expressSession = require('express-session'),
 	bodyParser = require('body-parser'),
 	server = http.createServer(app),
+	GitHubApi = require("github"),
 	myModels = require('./node_models/myModel.js'),
 	io = require('socket.io').listen(server);
 
@@ -33,43 +34,64 @@ app.use(cookieParser());
 app.use(expressSession({
 	secret: 'codereviewsession'
 }));
+
 app.use(express.static(__dirname + '/public'));
+app.post('/api/login', function(req, res) {
+	var fs = require('fs');
+	var text=fs.readFileSync('users.txt').toString();
+	var data=JSON.parse(text);
+	var found=false;
+	for(var i=0; i< data.users.length; i++) {
+		if (data.users[i].login === req.body.username) {
+			console.log("Found user");
+			found = true;
+			if (data.users[i].password === req.body.password) {
+				res.sendStatus(200);
+			}
+			else {
+				res.sendStatus(404);
+			}
+		}
+	}
+	if(found==false)
+		res.sendStatus(404);
+});
+app.post('/api/update', function(req, res) {
+	var fs = require('fs');
+	var text=fs.readFileSync('users.txt').toString();
+	var data=JSON.parse(text);
+	var found=false;
+	for(var i=0; i< data.users.length; i++) {
+		if (data.users[i].login === req.body.username) {
+			console.log("Found user");
+			found = true;
+			data.users[i].iframe= req.body.iframe;
+			data.users[i].gitID= req.body.gitid;
+			data.users[i].repo= req.body.repo;
+			data.users[i].chat= req.body.nick;
+			data.users[i].repoOwner= req.body.gitOwner;
+		}
+	}
+	if(found==true) {
+		fs.writeFile('users.txt',JSON.stringify(data),null);
+		res.sendStatus(200);
+	}
+	else
+		res.sendStatus(404);
+});
+app.get('/api/users',function(req, res){
+		var fs = require('fs');
+		var text=fs.readFileSync('users.txt').toString();
+		var data=JSON.parse(text);
+		res.json(data);
+	}
+)
+//github api
 
 // Routes
 app.get('/', routes.index);
 app.get('/partials/:name/', routes.partials);
-//app.get('*', routes.index);
-app.get('/git_repo', function(req, res){
-	var GitHubApi = require("github");
 
-	var github = new GitHubApi({
-    	// required
-    	version: "3.0.0",
-    	// optional
-    	debug: true,
-    	protocol: "https",
-    	host: "api.github.com", // should be api.github.com for GitHub
-    	pathPrefix: "", // for some GHEs; none for GitHub
-    	timeout: 5000,
-    	headers: {
-        	"user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
-    	}
-	});
-	github.authenticate({
-    	type: "basic",
-    	username: "code-review-tool",
-    	password: "codereviewtool1"
-	});
-	github.user.getEmails({
-	    // optional:
-	    // headers: {
-	    //     "cookie": "blahblah"
-	    // },
-    	user: "code-review-tool"
-	}, function(err, res) {
-    	console.log(JSON.stringify(res));
-	});
-});
 
 // Configure socket.io route
 io.set('log level', 1); // Remove debug messages from socket.io
@@ -79,4 +101,3 @@ io.sockets.on('disconnect', function () { console.log("Disconnect!!!");})
 // Start listening on default webserver port or 5000
 server.listen(appPort)
 console.log("Server started on port " + appPort);
-

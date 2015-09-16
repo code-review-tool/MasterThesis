@@ -1,9 +1,322 @@
 body, html {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100%;
-	overflow:hidden;
-	font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
-	font-size: 16px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow:hidden;
+    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+.main {
+    height: inherit;
+}
+.datepicker.dropdown-menu {
+    background-color:#20a0e9;
+}
+.datepicker.dropdown-menu table  {
+    background-color: #20a0e9;
+}
+.mainwrap {
+    height: inherit;
+}
+.hover{
+    background-color: #20a0e9;
+}
+
+.glyph-color {
+    color: black;
+}
+
+.bs-component {
+    background-color: white !important;
+    border-color: black !important;
+    border-style: double !important;
+}
+
+#mainPage {
+}
+
+.mainLeft {
+    float: left;
+    height: 100%;
+    width: 50%;
+    position: relative;
+}
+
+.mainRight {
+    float: right;
+    height: 100%;
+    width: 50%;
+    position: relative;
+}
+
+.chatFrame {
+    width: 75%; /*can be in percentage also.*/
+    height: 75%;
+    margin-top: 12.5%;
+    position: relative;
+    background-color: white;
+    border-radius: 6px;
+    border: 2px solid black;
+    display: inline-block;
+}
+
+.chatOnlineArea {
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    top: 0;
+    border-bottom: 1px solid black ;
+}
+
+.chatArea {
+    position: relative;
+    width: 100%;
+    height: 80%;
+    margin-top: 10%;
+    overflow-y: scroll;
+}
+
+.chatInputArea {
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    bottom: 0;
+}
+/*
+.upleft { width:50%; height: 100%; background:red; float:left; }
+.upright { width:50%; height: 50%; background:blue; float:right }
+.below { height:50%; width:50%; background:green; float:right; bottom: 0}
+
+.mainwrap > div { min-height: 450px; }
+
+.mainwrap {
+    overflow: hidden;
+}
+*/
+
+/*
+    INITIAL
+*/
+.overlay2 {
+    position: fixed;
+    width: 1%;
+    padding :0;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+.mouse-pointer {
+    background-color: red !important;
+    width: 17px !important;
+    height: 17px !important;
+    top: 0;
+    left: 0;
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid white;
+    opacity: 0.5;
+}
+.downright {
+    border: 3px #20a0e9;
+    width: inherit;
+    height: inherit;
+    float: right;
+}
+
+.left {
+    background-color: black;
+    left: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    visibility: hidden;
+    float: left;
+}
+
+.topright {
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 50%;
+    visibility: hidden;
+    float: left;
+}
+
+.img-rounded {
+    border-radius: 0px !important;
+    border: 3px #20a0e9 !important;
+    margin-bottom: 10px ;
+}
+
+.btn-color {
+    background-color: #20a0e9 !important;
+}
+
+.container-fluid {
+    border-radius: 0px !important;
+    font-size: 13px;
+}
+
+.code-container {
+    font-size: 10px !important;
+}
+
+.code {
+    font-size: 10px !important;
+}
+
+#codeModal {
+    font-size: 12px !important;
+}
+.input-group-addon {
+    font-size: 12px !important;
+}
+
+.overlay {
+    position: fixed;
+    width: inherit;
+    padding :0;
+    height: inherit;
+    top: inherit;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+    left: 0;
+    right: 0;
+}
+.video {
+    width:100%;
+    height: auto;
+    position:relative;
+    z-index: 0;
+}
+.overlay1 {
+    position: fixed;
+    width: 1%;
+    padding :0;
+    height: 100%;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
+.topRight {
+    width: 80px;
+    height: 40px;
+    margin-bottom: 25px !important;
+    margin-right: 25px;
+    position:absolute;
+    bottom:0;
+    right:0;
+}
+.topRight1 {
+      line-height: 12px;
+      width: 80px;
+      height: 40px;
+      font-size: 8pt;
+      margin-top: 100px;
+      margin-right: 200px;
+      position:absolute;
+      visibility: hidden;
+      top:0;
+      right:0;
+  }
+
+.border-box {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+body {
+    font-family: Arial;
+    font-size: 14px;
+}
+body > span,
+body > h1 {
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+}
+span {
+    color: #ffffff;
+}
+button {
+    width: auto;
+    padding: 7px 22px;
+}
+menu {
+    display: block;
+}
+menu > div {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-transition: -webkit-transform ease 300ms;
+    -moz-transition: -webkit-transform ease 300ms;
+    -ms-transition: -webkit-transform ease 300ms;
+    -o-transition: -webkit-transform ease 300ms;
+    transition: -webkit-transform ease 300ms;
+    -webkit-transition: transform ease 300ms;
+    -moz-transition: transform ease 300ms;
+    -ms-transition: transform ease 300ms;
+    -o-transition: transform ease 300ms;
+    transition: transform ease 300ms;
+}
+menu > div.left {
+    background: #273D7A;
+    left: -250px;
+}
+menu > div.show.left {
+    transform: translate3d(250px, 0, 0);
+    -ms-transform: translate3d(250px, 0, 0);
+    -webkit-transform: translate3d(250px, 0, 0);
+    -o-transform: translate3d(250px, 0, 0);
+    -moz-transform: translate3d(250px, 0, 0);
+}
+menu > div.right {
+    background: white;
+    right: -300px;
+}
+menu > div.show.right {
+    transform: translate3d(-300px, 0, 0);
+    -ms-transform: translate3d(-300px, 0, 0);
+    -webkit-transform: translate3d(-300px, 0, 0);
+    -o-transform: translate3d(-300px, 0, 0);
+    -moz-transform: translate3d(-300px, 0, 0);
+}
+menu > div > menu-item {
+    display: block;
+}
+menu > div > menu-item > div {
+    vertical-align: top;
+    float: none;
+    font-size: 20px;
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    padding: 55px 55px;
+    border-bottom: solid 4px #000000;
+    cursor: pointer;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    color: #000000;
+    font-family: "Lato";
+}
+menu > div > menu-item > div:hover {
+    background-color: #20a0e9;
+    color: white;
+}
+menu > div > menu-item > div > span {
+    float: left;
+    color: inherit;
+}
+
+.btn {
+    background: #20a0e9;
 }
