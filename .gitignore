@@ -1,7 +1,6 @@
 # Created by https://www.gitignore.io
 
 node_modules/
-public/js/lib/
 *.log
 dump.rdb
 *.swp

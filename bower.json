@@ -4,15 +4,18 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-	"angular": "*",
-	"jquery": "*",
-	"bootstrap": "*",
-	"angular-route": "*",
-	"angular-resource": "*",
-	"angular-animate": "*",
-	"hammerjs": "*",
-	"underscore": "*",
-	"socket.io-client": "*",
-   	"angular-sanitize": "*"
+    "angular": "*",
+    "jquery": "*",
+    "bootstrap": "*",
+    "angular-route": "*",
+    "angular-resource": "*",
+    "angular-animate": "*",
+    "hammerjs": "*",
+    "underscore": "*",
+    "socket.io-client": "*",
+    "angular-sanitize": "*",
+    "less": "*",
+    "angular-google-client": "~2.0.0",
+    "eonasdan-bootstrap-datetimepicker": "~4.15.35"
   }
 }

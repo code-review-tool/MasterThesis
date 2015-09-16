@@ -1,7 +1,544 @@
-<div ng-controller="CodeCtr as code" id="code-canvas" draw knock>
-	<div ng-controller="VideoCtr">
-		<video ng-src={{trustSrc(stream)}} autoplay="true" id="board-video"></video>
-	</div>
-	<button ng-click="onClick()">Click Me</button>
-	<div>Number of clicks: {{numOfClicks}}</div>
+<div class="panel panel-default" id="loginPanel" style="position: absolute;top:0; bottom: 0; left: 0; right: 0;  margin: auto; height: 250px; width: 600px;">
+    <div class="well bs-component" style="height: inherit; width: inherit;" ng-controller="AdminUserCtrl">
+        <form class="form-horizontal" role="form">
+            <fieldset>
+                <legend style="text-align: center;">Code Review Tool for Global Software Development</legend>
+                <div class="form-group">
+                    <label for="inputUsername" class="col-sm-4 control-label">Username</label>
+                    <div class="col-sm-4">
+                        <input type="text" style="width:220px;" class="form-control" id="inputUsername" placeholder="Username" ng-model="login.email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="col-sm-4 control-label">Password</label>
+                    <div class="col-sm-4">
+                        <input type="password" style="width:220px;" class="form-control" id="inputPassword" placeholder="Password" ng-model="login.password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-10">
+                        <button style="min-width: 100px;" type="submit" class="btn btn-default" ng-click="logIn(login.email, login.password)"><b>Log In</b></button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="alert alert-dismissible alert-danger" id="failedLogin" style="display: none;">
+        <strong>Oh snap!</strong> <a href="#" class="alert-link">Login failed. Please try again using correct credentials!</a>
+    </div>
+</div>
+<div class="panel panel-default" id="mainPage"  style="background-color: white !important; background: #FFFFFF; display:none;position: absolute;top:0; bottom: 0; left: 0;   right: 0;  margin: auto; height: 100%; width: 100%;" ng-controller="mainCtrl">
+    <div class="mainLeft">
+        <form class="form-horizontal" style="width: 40%">
+            <button class="btn-default"  onclick="location.href = 'https://github.com/';" style="border-radius: 2px; width:200px; margin-bottom: 25px; margin-left: 50px;margin-top: 50px;" id="btnInformalReview"> <b>Informal Review</b> </button>
+            <button class="btn-default" style="width:200px; margin-bottom: 25px; margin-left: 50px;" id="btnFormalReview" ng-click="$root.goToInformal()"><b>Formal Review</b></button>
+            <button class="btn-default"  style="width:200px; margin-bottom: 25px; margin-left: 50px;" id="btnCalendar" ng-click="$root.goCalendar()"><b>Calendar</b></button>
+        </form>
+
+        <form class="form-horizontal" id="settingsForm" role="form" style="border-radius: 6px; background-color: white; padding-top: 5px; border:1px solid black;position: absolute; width: auto; bottom: 0; left: 0; margin-bottom:75px; margin-left: 15px;">
+            <div class="form-group">
+                <label for="inputUsername" class="col-sm-4 control-label">Github Account</label>
+                <div class="col-sm-4">
+                    <input type="text" style="width:220px;" class="form-control" id="inputGitUser" value={{$root.user.gitID}} placeholder="Github user">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="col-sm-4 control-label">Github Repo</label>
+                <div class="col-sm-4">
+                    <input type="text" style="width:220px;" class="form-control" id="inputGitRepo" value={{$root.user.repo}}  placeholder="Github repository">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="col-sm-4 control-label">Github Repo Owner</label>
+                <div class="col-sm-4">
+                    <input type="text" style="width:220px;" class="form-control" id="inputRepoOwner" value={{$root.user.repoOwner}}  placeholder="Github repository">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="col-sm-4 control-label">IFrame Link</label>
+                <div class="col-sm-4">
+                    <input type="text" style="width:220px;" class="form-control" id="inputIFrame" value={{$root.user.iframe}} placeholder="Iframe link">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="col-sm-4 control-label">Chat nickname</label>
+                <div class="col-sm-4">
+                    <input type="text" style="width:220px;" class="form-control" id="inputNick" value={{$root.user.chat}} placeholder="Chat name">
+                </div>
+            </div>
+            <button class="btn-success" style="margin-left: 2px; margin-bottom: 2px;" id="btnUpdate" ng-click="$root.updateUser()"><b>Update</b></button>
+        </form>
+        <button class="btn btn-default" style="position: absolute; min-width: 150px; bottom: 0; left: 0; margin-bottom:15px; margin-left: 15px;" id="settingsButton"><b>Dashboard</b></button>
+        <script>
+            $('#settingsForm').hide();
+
+            $("#settingsButton").click(function()
+            {
+                $('#settingsForm').fadeToggle();
+            });
+        </script>
+    </div>
+    <div class="mainRight">
+        <div class="chatFrame"  ng-controller="ChatCtrl">
+            <div class="chatOnlineArea" style="text-align: center;">
+                <h3 ng-if="$root.isOnline == false"> Your contact is <span class="label label-danger">OFFLINE</span></h3>
+                <h3 ng-if="$root.isOnline == true"> Your contact is <span class="label label-success">ONLINE</span></h3>
+            </div>
+            <div class="chatArea">
+                <textarea readonly style="width: 100%; height: 100%" id="chatTextarea" ng-model="$root.chatLog"></textarea>
+            </div>
+            <div class="chatInputArea">
+
+                <form role='form' novalidate name='form'>
+                    <div class='form-group'>
+                        <div class="input-group">
+                            <input type="text" id="chatText" class="form-control" id="sendMessage" placeholder="Message" ng-model="message">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-enable='form.$valid' ng-click="sendMessage(message)">Send</button>
+                        </span>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+<div class="container" id="calendarPage" ng-controller="GoogleCalCtrl" style="background: #FFFFFF; display:none;position: absolute;top:0; bottom: 0; left: 0;   right: 0;  margin: auto; height: 100%; width: 100%;">
+    <div class="form-horizontal" style="height: 100%; width: 60%;">
+        <button class="btn-default" id="btnBack" ng-click="$root.goToMain()">Back</button>
+        <iframe id="myCalendar" style="height: 40%;width:100%; margin-top: 40px;"></iframe>
+        <iframe id="otherCalendar" style="height: 40%;width:100%;margin-top: 40px;"></iframe>
+    </div>
+    <form class="form-horizontal" id="calendarScheduler" style="border: 2px solid black; border-radius: 2px; padding-top: 25px; padding-left: 25px; height: 80%;width: 30%;position:absolute;top:20px; right:30px;background: #FFFFFF; " >
+        <h2 style="text-align: center;" >Schedule a meeting</h2>
+        <hr>
+        <div class="form-group">
+            <label for="inputUsername" class="col-sm-4 control-label">Title</label>
+            <div class="col-sm-4">
+                <input type="text" style="width:220px;" class="form-control" id="inputTitle"  placeholder="Title">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword" class="col-sm-4 control-label">Description</label>
+            <div class="col-sm-4">
+                <input type="text" style="width:220px;" class="form-control" id="inputDescription"  placeholder="Description">
+            </div>
+        </div>
+        <div class='col-md-5'>
+            <label>Start Date</label>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker6'>
+                    <input type='text' class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-5'>
+            <label>End Date</label>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker7'>
+                    <input type='text' class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-default" id="btnSchedule" ng-click="$root.scheduleMeeting()">Schedule</button>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker6').datetimepicker();
+        $('#datetimepicker7').datetimepicker({
+            useCurrent: false //Important! See issue #1075
+        });
+        $("#datetimepicker6").on("dp.change", function (e) {
+            $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+        });
+        $("#datetimepicker7").on("dp.change", function (e) {
+            $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+        });
+    });
+</script>
+<div class="mainwrap" ng-show="$root.logged">
+    <div class="left" >
+        <div class="img-rounded" id="informalModal"  style="width:100%; height:100%;background-color: #FFFFFF;border-radius: 20px;border-right: 20px; border-color: #454545;display: none;overflow-y: scroll;" aria-labelledby="myModalLabel">
+            <div class="container-fluid" style="width:100%; height:10%;">
+                <h2  style="width:100%; height:100%; text-align: center;" >Pull Requests</h2>
+            </div>
+            <div class="container-fluid" style="width:100%; height:90%">
+                <table id="pullTable" class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Created by</th>
+                        <th>Assigned to</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-repeat="pull in $root.pulls">
+                    <tr class='clickable-row' ng-if="(pull.user.login === $root.user.gitID && pull.assignee.login === $root.otherGit) ||
+                        (pull.user.login === $root.otherGit && pull.assignee.login ===$root.user.gitID)"  ng-click="$root.goPull(pull.url,pull.number)">
+                        <td>{{pull.id}}</td>
+                        <td>{{pull.title}}</td>
+                        <td>{{pull.body}}</td>
+                        <td>{{pull.user.login}}</td>
+                        <td>{{pull.assignee.login}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="issueModal"  style="width:100%; height:100%;background-color: #FFFFFF;border-radius: 20px;border-right: 20px; border-color: #454545;display: none; overflow-y: scroll;" aria-labelledby="myModalLabel">
+            <div class="container-fluid" style="width:100%; height:10%;">
+                <h2  style="width:100%; height:100%; text-align: center;" >Issues</h2>
+            </div>
+            <div class="container-fluid" style="width:100%; height:90%">
+                <table id="issueTable" class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Created by</th>
+                        <th>Assigned to</th>
+                        <th>State</th>
+                        <th>Last Modified</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class='clickable-row' ng-repeat="issue in $root.issues" ng-click="$root.goIssue(issue.url)">
+                        <td>{{issue.id}}</td>
+                        <td>{{issue.title}}</td>
+                        <td>{{issue.user.login}}</td>
+                        <td>{{issue.assignee.login}}</td>
+                        <td>{{issue.state}}</td>
+                        <td>{{issue.updated_at.substr(0,10)}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="issueDetailModal" style="width: 100%;height: 100%;;background-color: #FFFFFF;border-radius: 20px;border-right: 20px;overflow-y: scroll; border-color: #454545;display: none;" aria-labelledby="myModalLabel">
+            <div class="page-header">
+                <h1 style="font-weight: bold">
+                    <span class="label label-success">Open</span>
+                    {{$root.issue.title}}
+                </h1>
+            </div>
+
+            <h4>Created by:  {{$root.issue.user.login}}</h4>
+            <h4>Assigned to: {{$root.issue.assignee.login}}</h4>
+
+            <h3>Description</h3>
+            <div class="container" style="width:inherit;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">ID :{{$root.issue.id}}</div>
+                    <div class="panel-body">{{$root.issue.body}}</div>
+                </div>
+            </div>
+
+            <h3 ng-if="$root.issue.labels.length > 0">Labels</h3>
+
+            <div class="container" style="width: inherit;">
+                <div class="hero-unit" ng-repeat="label in $root.issue.labels" style="display: inline-block; height: 50px;">
+                    <span class="label label-default" style="height: 50px;" ng-if="label.name == 'duplicate'">Duplicate</span>
+                    <span class="label label-primary" style="height: 50px;" ng-if="label.name == 'enhancement'">Enhancement</span>
+                    <span class="label label-success" style="height: 50px;" ng-if="label.name == 'help wanted'">Help Wanted</span>
+                    <span class="label label-info" style="height: 50px;" ng-if="label.name == 'question'">Question</span>
+                    <span class="label label-warning" style="height: 50px;" ng-if="label.name == 'invalid'">Invalid</span>
+                    <span class="label label-danger"  style="height: 50px;" ng-if="label.name == 'bug'">Bug</span>
+                    <span class="label label-default" style="height:50px;" ng-if="label.name == 'wontfix'">Wont fix</span>
+                </div>
+            </div>
+
+            <h3 ng-if="$root.issue.comments !=0">Comments </h3>
+
+            <div class="container" ng-if="$root.issue.comments !=0" style="width: inherit">
+                <div id="issuecommentsTable" class="table table-condensed"  ng-repeat="comment in $root.issueComments track by comment.id"  style="width:80%;">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            {{comment.body}}
+                        </div>
+                        <div class="panel-footer">{{comment.user.login}} at {{comment.created_at.substr(0,10)}} </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" id="codeModal" style="width: 100%;height: 100%;background-color: #FFFFFF; border-color: #454545;display: none;margin:0px; padding: 0px;" aria-labelledby="myModalLabel">
+            <div class="container" id="codeContainer" style="height:90%;width: 100%;overflow-y: scroll;margin:0px; padding: 0px;"></div>
+            <button class="btn-default" style=" top:50%; left:50%;" id="ideButton" ng-click="$root.showIDECode()">Show File</button>
+        </div>
+
+        <iframe id="googleDocFrame" style="width:100%; height:100%;display: none"></iframe>
+
+        <div class="container-fluid" id="ideContainer" style="width: 100%;height: 100%;display: none;">
+            <pre id='editor' style="width:100%; height: 90%" tabindex="0" onscroll="$root.ideScroll()"></pre>
+
+            <div class="container-fluid" style="width:100%; height:10%;text-align: center;">
+                <button class="btn-default" style=" top:50%; left:50%;" id="saveButton" ng-click="$root.saveFile()">Save note</button>
+            </div>
+
+            <script>
+                var editor = ace.edit('editor');editor.setTheme('ace/theme/chaos');editor.getSession().setMode('ace/mode/javascript');ace.require('ace/ext/language_tools');var editor = ace.edit('editor');editor.setOptions({enableBasicAutocompletion: true});
+                var socket = io.connect();
+
+                $('#codeContainer').scroll(function (){
+                    socket.emit('codeScroll',$('#codeContainer').scrollTop());
+                });
+
+                $('#editor').keyup(function (){
+                    socket.emit('ideText',editor.getValue());
+                });
+
+                $(".ace_scrollbar").scroll(function (){
+                    socket.emit('ideScroll',$(".ace_scrollbar").scrollTop());
+                });
+
+                $("#filesContainer").scroll(function (){
+                    socket.emit('fileScroll',$("#filesContainer").scrollTop());
+                });
+
+                $("#googleDocScroll").scroll(function (){
+                    socket.emit('googleScroll',$("#googleDocScroll").scrollTop());
+                });
+
+                $('#searchField').keyup(function (){
+                    socket.emit('searchText',$('#searchField').val());
+                });
+
+                $("#issueModal").scroll(function (){
+                    socket.emit('issueScroll',$("#issueModal").scrollTop());
+                });
+
+                $("#issueSmallModal").scroll(function (){
+                    socket.emit('issueSmallScroll',$("#issueSmallModal").scrollTop());
+                });
+
+                $('#issueDetailModal').scroll(function (){
+                    socket.emit('issueDetailsScroll',$('#issueDetailModal').scrollTop());
+                });
+
+                $("#informalModal").scroll(function (){
+                    socket.emit('informalScroll',$("#informalModal").scrollTop());
+                });
+
+                $('#commentsModal').scroll(function (){
+                    socket.emit('commentsScroll',$('#commentsModal').scrollTop());
+                });
+            </script>
+
+        </div>
+
+        <script>
+            $("#pullTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("#commentTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("#filesTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("#issueTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("#issueSmallTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+
+            $("#documentsTable").delegate('td','mouseover mouseleave', function(e) {
+                if (e.type == 'mouseover') {
+                    $(this).parent().addClass("hover");
+                    $("colgroup").eq($(this).index()).addClass("hover");
+                }
+                else {
+                    $(this).parent().removeClass("hover");
+                    $("colgroup").eq($(this).index()).removeClass("hover");
+                }
+            });
+        </script>
+
+    </div>
+
+    <div class="overlay2">
+        <div class="mouse-pointer" style="background-color: red; width: 25px; height: 25px; top:0; left: 0;position: absolute">
+        </div>
+    </div>
+
+    <div class="topright">
+        <div class="img-rounded" id="commentsModal"   style="width:100%; height:100%;background-color: #FFFFFF; border-radius: 20px;border-left: 20px; border-color: #454545;display: none;overflow-y: scroll;" aria-labelledby="myModalLabel">
+            <div class="container-fluid" style="width:100%; height:10%; margin-bottom: 20px">
+                <h2 style="width:100%; height:100%; text-align: center;" >Comments</h2>
+            </div>
+            <div class="container-fluid" style="width:100%; height:90%">
+                <table id="commentTable" class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Comment</th>
+                        <th>File</th>
+                        <th>Author</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-repeat="comment in $root.comments">
+                    <tr ng-if="comment.pull_request_url == $root.pullCommentUrl" ng-click="$root.goCode(comment.id)">
+                        <td>{{comment.body}}</td>
+                        <td>{{comment.path}}</td>
+                        <td>{{comment.user.login}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="issueSmallModal"  style="width:100%; height:100%;background-color: #FFFFFF;border-radius: 20px;border-right: 20px; border-color: #454545;display: none;overflow-y: scroll;" aria-labelledby="myModalLabel">
+            <div class="container-fluid" style="width:100%; height:90%">
+                <table id="issueSmallTable" class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Title</th>
+                        <th>State</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class='clickable-row' ng-repeat="issue in $root.issues" ng-click="$root.goIssueDetails(issue.url)">
+                        <td>{{issue.id}}</td>
+                        <td>{{issue.title}}</td>
+                        <td>{{issue.state}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container-fluid" id="googleDriveModal"  ng-controller="GoogleDriveCtrl"  style="width:100%;background-color: #FFFFFF; height:100%;display:none;  ">
+            <div class="container-fluid" id="googleDocScroll" style="width:100%;background-color: #FFFFFF; height:85%;overflow-y:scroll; ">
+                <table id="documentsTable" class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Owner</th>
+                        <th>Last modified</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-repeat="document in $root.documents | filter:documentSearch">
+                    <tr ng-if="document.fileExtension == null && document.mimeType!='application/vnd.google-apps.folder'" ng-click="$root.goGDocument(document.alternateLink)" >
+                        <td>{{document.title}}</td>
+                        <td>{{document.owners[0].displayName}}</td>
+                        <td>{{document.modifiedDate.substr(0,10)}},{{document.lastModifyingUserName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="inner-addon left-addon" style="width:100%;background-color: #FFFFFF; height:15%;child-align: middle;">
+                <i class="glyphicon glyphicon-search"></i>
+                <input type="text" id="searchField" style="margin-top:20px;" placeholder="Search" ng-model="documentSearch">
+            </div>
+        </div>
+
+        <div class="container-fluid" id="filesModal"   style="width:100%; height:100%;background-color: #FFFFFF; display: none;" aria-labelledby="myModalLabel">
+            <h2 style="text-align: center;" >Repository File Manager</h2>
+            <div class="container-fluid" id="filesContainer" style="width:100%; height:90%;overflow-y: scroll;">
+                <table id="filesTable" class="table table-condensed" style="width: 100%">
+                    <tbody>
+                    <tr ng-repeat="file in $root.files " ng-click="$root.goText(file)">
+                        <td ng-if="file.type == 'file'"><span style="padding-right: 10px" class="glyphicon glyphicon-file glyph-color"></span> {{file.name}}</td>
+                        <td ng-if="file.type == 'dir'"><span style="padding-right: 10px" class="glyphicon glyphicon-folder-open glyph-color"></span> {{file.name}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn-default" style="bottom: 0; align-self: center; margin-bottom: 75px" id="refreshButton" ng-click="$root.refreshFiles()">Root</button>
+
+            </div>
+
+        </div>
+        <div class="container-fluid" id="repoDetails"  style="width:100%; height:100%;background-color: #FFFFFF;border-radius: 20px;border-right: 20px; border-color: #454545;display: none;overflow-y: scroll;" aria-labelledby="myModalLabel">
+            <h2 class="text-center" style="height: 100px;">Repository name: {{$root.repo.name}}</h2>
+            <h3 class="text-justify" style="width: 80%;margin-left: 10%;margin-right: 10%;">Description:</h3>
+            <p class="text-justify" style="width: 80%;margin-left: 10%;margin-right: 10%;">{{$root.repo.description}}</p>
+        </div>
+    </div>
+
+    <div class="downright">
+        <div class='overlay' ng-controller="CodeCtr as code" id="code-canvas" draw knock>
+            <div class='overlay' ng-controller="VideoCtr">
+                <video class='video' ng-src={{trustSrc(stream)}} autoplay="true" id="board-video"></video>
+                <div class="overlay1" ng-controller="asideCtr">
+                    <button class=" btn btn-default topRight" style="background-color: white !important; color:black !important; border: 1px solid black;min-width: 150px;" ng-controller="RestCtrl" id="menuButton" ng-click="showMenu($event)"><b>MENU</b></button>
+                    <menu visible="rightVisible" alignment="right" class="ng-isolate-scope">
+                        <menu-item hash="first-page"  style="height:16.66%;" class="ng-scope ng-isolate-scope" ng-click="goInformalReview()">
+                            <span class="ng-scope">INFORMAL REVIEW</span>
+                        </menu-item>
+                        <menu-item hash="second-page" style="height:16.66%;" class="ng-scope ng-isolate-scope"  ng-click="goTask()">
+                            <span class="ng-scope">TASK TRACKING</span>
+                        </menu-item>
+                        <menu-item hash="third-page" style="height:16.66%;" class="ng-scope ng-isolate-scope"  ng-click="goIDE()">
+                            <span class="ng-scope">IDE</span>
+                        </menu-item>
+                        <menu-item hash="fourth-page" style="height:16.66%;" class="ng-scope ng-isolate-scope"  ng-click="goDocs()">
+                            <span class="ng-scope">GOOGLE DOCS</span>
+                        </menu-item>
+                        <menu-item hash="fifth-page" style="height:16.66%;" class="ng-scope ng-isolate-scope" ng-click="goHome()">
+                            <span class="ng-scope">HOME</span>
+                        </menu-item>
+                        <menu-item hash="sixth-page" style="height:16.66%;" class="ng-scope ng-isolate-scope" ng-click="goMainMenu()">
+                            <span class="ng-scope">MAIN MENU</span>
+                        </menu-item>
+                    </menu>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

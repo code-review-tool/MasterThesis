@@ -1,40 +1,53 @@
 doctype html
 html(ng-app="myApp")
-	head
-		meta(charset='utf-8')
-		meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no')
-		title Code Review
-		
-		link(rel='stylesheet', href='js/lib/bootstrap/dist/css/bootstrap.min.css')
-		link(rel='stylesheet', href='css/style.css')
-
-	body(onselectstart="return false;", ondragstart="return false;", oncontextmenu="return false;")
-		div(ng-view, class="main")
-
-	<!-- jQuery -->
-	script(src='js/lib/jquery/dist/jquery.min.js')
-
-	<!-- Hammer -->
-	script(src='js/lib/hammerjs/hammer.min.js')
-
-	<!-- angular core -->
-	script(src='js/lib/angular/angular.min.js')
-	script(src='js/lib/angular-route/angular-route.min.js')
-	script(src='js/lib/angular-resource/angular-resource.min.js')
-	script(src='js/lib/angular-animate/angular-animate.min.js')
-	script(src='js/lib/angular-sanitize/angular-sanitize.min.js')
-	<!-- external -->
-	script(src='js/lib/socket.io-client/socket.io.js')
-	script(src='js/reconnecting-websocket.min.js')
-	script(src='js/lib/bootstrap/dist/js/bootstrap.min.js')
-	<!-- app -->
-	script(src='js/app.js')
-	<!-- services -->
-	script(src='js/services/socket-service.js')
-	<!-- controllers -->
-	script(src='js/controllers/video-controller.js')
-	script(src='js/controllers/code-controller.js')
-	<!-- filters -->
-	script(src='js/filters/filters.js')
-	<!-- directives -->
-	
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no')
+        title Code Review
+        link(rel='stylesheet', href='js/lib/bootstrap/dist/css/bootstrap.min.css')
+        link(rel='stylesheet', href='css/button.css')
+        link(rel='stylesheet', href='css/style.css')
+        link(rel='stylesheet', href='css/bootstrap-cosmo.min.css')
+        link(rel='stylesheet', href='css/datepicker.css')
+        link(rel='stylesheet', href='js/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css')
+        link(rel='stylesheet/less', href='style.less')
+    body( onselectstart="return false;", ondragstart="return false;", oncontextmenu="return false;")
+        div(ng-view, class="main")
+            <!-- jQuery -->
+    script(src='js/lib/jquery/dist/jquery.min.js')
+        <!-- Hammer -->
+    script(src='js/lib/hammerjs/hammer.min.js')
+        <!-- angular core -->
+    script(src='js/lib/angular/angular.min.js')
+    script(src='js/lib/angular-route/angular-route.min.js')
+    script(src='js/lib/angular-resource/angular-resource.min.js')
+    script(src='js/lib/angular-animate/angular-animate.min.js')
+    script(src='js/lib/angular-sanitize/angular-sanitize.min.js')
+    script(src='js/lib/moment/min/moment.min.js')
+    script(src='js/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
+    <!-- external -->
+    script(src='js/lib/socket.io-client/socket.io.js')
+    script(src='js/reconnecting-websocket.min.js')
+    script(src='js/lib/bootstrap/dist/js/bootstrap.min.js')
+    script(src='js/ext-lib/codeeditor/src-noconflict/ace.js')
+    script(src='js/ext-lib/codeeditor/src-noconflict/ext-language_tools.js')
+    script(src='https://apis.google.com/js/client.js?onload=checkAuth')
+    <!-- app -->
+    script(src='js/app.js')
+    <!-- services -->
+    script(src='js/services/socket-service.js')
+    script(src='js/services/mousetrack-service.js')
+    <!-- controllers -->
+    script(src='js/controllers/rest-controller.js')
+    script(src='js/controllers/video-controller.js')
+    script(src='js/controllers/code-controller.js')
+    script(src='js/controllers/aside-controller.js')
+    script(src='js/controllers/auth-controller.js')
+    script(src='js/controllers/main-controller.js')
+    script(src='js/controllers/chat-controller.js')
+    script(src='js/controllers/googlecalendar-controller.js')
+    script(src='js/controllers/googledrive-controller.js')
+    <!-- factories -->
+    <!-- filters -->
+    script(src='js/filters/filters.js')
+    <!-- directives -->
