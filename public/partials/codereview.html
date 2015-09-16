@@ -1,0 +1,7 @@
+<div ng-controller="CodeCtr as code" id="code-canvas" draw knock>
+	<div ng-controller="VideoCtr">
+		<video ng-src={{trustSrc(stream)}} autoplay="true" id="board-video"></video>
+	</div>
+	<button ng-click="onClick()">Click Me</button>
+	<div>Number of clicks: {{numOfClicks}}</div>
+</div>

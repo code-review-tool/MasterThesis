@@ -1,0 +1,20 @@
+{
+  "name": "video_boilerplate",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "winston": "*",
+    "underscore": "*",
+    "socket.io": "*",
+    "method-override": "*",
+    "jade": "*",
+    "express": "*",
+    "express-session": "*",
+    "cookie-parser": "*",
+    "connect": "*",
+    "body-parser": "*",
+    "bower": "*",
+    "winston-mongodb": "0.5.3",
+    "github": "*"
+  }
+}
